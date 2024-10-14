@@ -3,6 +3,7 @@ const app = require("../app");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 const db = require("../db/connection");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -17,6 +18,14 @@ describe("express server", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body).toEqual({ msg: "endpoint does not exist" });
+      });
+  });
+  test("GET:200, /api responds with information on other endpoints available", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpoints);
       });
   });
 });

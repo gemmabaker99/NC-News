@@ -71,3 +71,29 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+describe("/api/articles", () => {
+  test("GET:200, responds with an array of article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+        body.articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("string");
+          expect(article.body).toBe(undefined);
+        });
+        expect(body.articles[0].title).toBe(
+          "Eight pug gifs that remind me of mitch"
+        );
+        expect(body.articles[1].title).toBe("A");
+        expect(body.articles[2].title).toBe("Sony Vaio; or, The Laptop");
+      });
+  });
+});

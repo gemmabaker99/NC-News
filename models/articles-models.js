@@ -11,4 +11,26 @@ function selectArticleById(articleId) {
     });
 }
 
-module.exports = selectArticleById;
+function selectArticles() {
+  return db
+    .query(
+      `SELECT author, title, article_id, topic, created_at, votes, article_img_url FROM articles ORDER BY created_at DESC`
+    )
+    .then((results) => {
+      const articles = results.rows;
+      const articlePromises = articles.map((article) => {
+        return db
+          .query(
+            `SELECT count(comment_id) AS comment_count FROM comments WHERE article_id = $1`,
+            [article.article_id]
+          )
+          .then((result) => {
+            article.comment_count = result.rows[0].comment_count;
+            return article;
+          });
+      });
+      return Promise.all(articlePromises);
+    });
+}
+
+module.exports = { selectArticleById, selectArticles };

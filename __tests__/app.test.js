@@ -97,3 +97,47 @@ describe("/api/articles", () => {
       });
   });
 });
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200, responds with all comments for the specified article", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(2);
+        body.comments.forEach((comment) => {
+          console.log(comment);
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
+        });
+        expect(body.comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 400, responds with bad request when given an invalid ID", () => {
+    return request(app)
+      .get("/api/articles/bad/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("bad request");
+      });
+  });
+  test("GET 404, responds with not found if given a valid but not available ID", () => {
+    return request(app)
+      .get("/api/articles/99/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("not found");
+      });
+  });
+  test("GET 200, responds with an empty array when an article exists but has not comments", () => {
+    return request(app)
+      .get("/api/articles/13/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(0);
+      });
+  });
+});

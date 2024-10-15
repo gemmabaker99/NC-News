@@ -4,6 +4,7 @@ const getTopics = require("./controllers/topics-controllers");
 const {
   getArticleById,
   getArticles,
+  getCommentsByArticleId,
 } = require("./controllers/articles-controllers");
 
 const app = express();
@@ -16,6 +17,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getArticles);
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 //not found endpoints
 app.all("*", (request, response, next) => {
@@ -31,7 +34,7 @@ app.use((err, request, response, next) => {
 });
 
 app.use((err, request, response, next) => {
-  if (err.code === "42703") {
+  if ((err.code === "22P02") | (err.code === "42703")) {
     response.status(400).send({ msg: "bad request" });
   }
   next(err);

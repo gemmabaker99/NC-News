@@ -14,23 +14,26 @@ function selectArticleById(articleId) {
 function selectArticles() {
   return db
     .query(
-      `SELECT author, title, article_id, topic, created_at, votes, article_img_url FROM articles ORDER BY created_at DESC`
+      `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, count(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY created_at DESC`
     )
     .then((results) => {
-      const articles = results.rows;
-      const articlePromises = articles.map((article) => {
-        return db
-          .query(
-            `SELECT count(comment_id) AS comment_count FROM comments WHERE article_id = $1`,
-            [article.article_id]
-          )
-          .then((result) => {
-            article.comment_count = result.rows[0].comment_count;
-            return article;
-          });
-      });
-      return Promise.all(articlePromises);
+      return results;
     });
 }
 
-module.exports = { selectArticleById, selectArticles };
+function selectCommentsByArticleId(articleId) {
+  return db
+    .query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC `,
+      [articleId]
+    )
+    .then((results) => {
+      return results;
+    });
+}
+
+module.exports = {
+  selectArticleById,
+  selectArticles,
+  selectCommentsByArticleId,
+};

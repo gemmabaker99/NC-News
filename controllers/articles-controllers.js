@@ -1,6 +1,7 @@
 const {
   selectArticleById,
   selectArticles,
+  selectCommentsByArticleId,
 } = require("../models/articles-models");
 
 function getArticleById(request, response, next) {
@@ -17,11 +18,25 @@ function getArticleById(request, response, next) {
 function getArticles(request, response, next) {
   selectArticles()
     .then((results) => {
-      response.status(200).send({ articles: results });
+      response.status(200).send({ articles: results.rows });
     })
     .catch((err) => {
       next(err);
     });
 }
 
-module.exports = { getArticleById, getArticles };
+function getCommentsByArticleId(request, response, next) {
+  const articleId = request.params.article_id;
+  selectArticleById(articleId)
+    .then(() => {
+      return selectCommentsByArticleId(articleId);
+    })
+    .then((results) => {
+      response.status(200).send({ comments: results.rows });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { getArticleById, getArticles, getCommentsByArticleId };

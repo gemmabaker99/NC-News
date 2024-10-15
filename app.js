@@ -6,8 +6,11 @@ const {
   getArticles,
   getCommentsByArticleId,
 } = require("./controllers/articles-controllers");
+const postAComment = require("./controllers/comments-controllers");
 
 const app = express();
+
+app.use(express.json());
 
 app.get("/api", (request, response) => {
   response.status(200).send({ endpoints: endpoints });
@@ -19,6 +22,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postAComment);
 
 //not found endpoints
 app.all("*", (request, response, next) => {
@@ -34,7 +39,11 @@ app.use((err, request, response, next) => {
 });
 
 app.use((err, request, response, next) => {
-  if ((err.code === "22P02") | (err.code === "42703")) {
+  if (
+    (err.code === "22P02") |
+    (err.code === "42703") |
+    (err.code === "23503")
+  ) {
     response.status(400).send({ msg: "bad request" });
   }
   next(err);

@@ -105,7 +105,6 @@ describe("/api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.comments.length).toBe(2);
         body.comments.forEach((comment) => {
-          console.log(comment);
           expect(typeof comment.comment_id).toBe("number");
           expect(typeof comment.votes).toBe("number");
           expect(typeof comment.created_at).toBe("string");
@@ -132,7 +131,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.msg).toEqual("not found");
       });
   });
-  test("GET 200, responds with an empty array when an article exists but has not comments", () => {
+  test("GET 200, responds with an empty array when an article exists but has no comments", () => {
     return request(app)
       .get("/api/articles/13/comments")
       .expect(200)
@@ -141,3 +140,46 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("/api/articles/:article_id/comments", () => {
+  test("POST:201, posts a new comment to the given article id and responds with comment", () => {
+    return request(app)
+      .post("/api/articles/13/comments")
+      .send({ username: "lurker", body: "I love to read your articles" })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment.author).toBe("lurker");
+        expect(body.comment.body).toBe("I love to read your articles");
+        expect(body.comment.article_id).toBe(13);
+      });
+  });
+  test("POST: 404, responds with not found when article ID is valid but does not exist", () => {
+    return request(app)
+      .post("/api/articles/99/comments")
+      .send({ username: "lurker", body: "I love to read your articles" })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("POST:400, responds with bad request when passed an invalid article ID", () => {
+    return request(app)
+      .post("/api/articles/bad/comments")
+      .send({ username: "lurker", body: "I love to read your articles" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("POST:400, responds with bad request when given a comment in the wrong format", () => {
+    return request(app)
+      .post("/api/articles/13/comments")
+      .send({ username: 4, body: 2 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+//ready to submit- pr was closed so do in morning
+//then straight onto task 8

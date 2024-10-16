@@ -5,6 +5,7 @@ const {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
+  increaseVotesForArticle,
 } = require("./controllers/articles-controllers");
 const postAComment = require("./controllers/comments-controllers");
 
@@ -25,6 +26,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postAComment);
 
+app.patch("/api/articles/:article_id", increaseVotesForArticle);
+
 //not found endpoints
 app.all("*", (request, response, next) => {
   response.status(404).send({ msg: "endpoint does not exist" });
@@ -42,7 +45,8 @@ app.use((err, request, response, next) => {
   if (
     (err.code === "22P02") |
     (err.code === "42703") |
-    (err.code === "23503")
+    (err.code === "23503") |
+    (err.code === "23502")
   ) {
     response.status(400).send({ msg: "bad request" });
   }

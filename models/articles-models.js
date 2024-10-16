@@ -32,8 +32,23 @@ function selectCommentsByArticleId(articleId) {
     });
 }
 
+function updateVotesForArticle(articleId, voteIncrease) {
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [voteIncrease, articleId]
+    )
+    .then((results) => {
+      if (results.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "article not found" });
+      }
+      return results.rows[0];
+    });
+}
+
 module.exports = {
   selectArticleById,
   selectArticles,
   selectCommentsByArticleId,
+  updateVotesForArticle,
 };

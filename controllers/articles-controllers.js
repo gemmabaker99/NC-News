@@ -2,6 +2,7 @@ const {
   selectArticleById,
   selectArticles,
   selectCommentsByArticleId,
+  updateVotesForArticle,
 } = require("../models/articles-models");
 
 function getArticleById(request, response, next) {
@@ -39,4 +40,21 @@ function getCommentsByArticleId(request, response, next) {
     });
 }
 
-module.exports = { getArticleById, getArticles, getCommentsByArticleId };
+function increaseVotesForArticle(request, response, next) {
+  const articleId = request.params.article_id;
+  const voteIncrease = request.body.inc_votes;
+  updateVotesForArticle(articleId, voteIncrease)
+    .then((results) => {
+      response.status(200).send({ article: results });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = {
+  getArticleById,
+  getArticles,
+  getCommentsByArticleId,
+  increaseVotesForArticle,
+};

@@ -11,6 +11,7 @@ const {
   postAComment,
   removeAComment,
 } = require("./controllers/comments-controllers");
+const getAllUsers = require("./controllers/users-controllers");
 
 const app = express();
 
@@ -32,6 +33,8 @@ app.post("/api/articles/:article_id/comments", postAComment);
 app.patch("/api/articles/:article_id", increaseVotesForArticle);
 
 app.delete("/api/comments/:comment_id", removeAComment);
+
+app.get("/api/users", getAllUsers);
 
 //not found endpoints
 app.all("*", (request, response, next) => {

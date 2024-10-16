@@ -3,6 +3,7 @@ const {
   selectArticles,
   selectCommentsByArticleId,
   updateVotesForArticle,
+  selectArticleByTopic,
 } = require("../models/articles-models");
 
 function getArticleById(request, response, next) {
@@ -17,8 +18,17 @@ function getArticleById(request, response, next) {
 }
 
 function getArticles(request, response, next) {
-  const { sort_by, order } = request.query;
-  selectArticles(sort_by, order)
+  const { sort_by, order, topic } = request.query;
+  let articlePromise;
+  if (topic) {
+    articlePromise = selectArticleByTopic(topic).then(() => {
+      return selectArticles(sort_by, order, topic);
+    });
+  } else {
+    articlePromise = selectArticles(sort_by, order, topic);
+  }
+
+  articlePromise
     .then((results) => {
       response.status(200).send({ articles: results.rows });
     })

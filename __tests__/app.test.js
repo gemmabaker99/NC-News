@@ -295,3 +295,24 @@ describe("/api/articles", () => {
       });
   });
 });
+describe("/api/articles", () => {
+  test("GET:200, responds with articles matching the topic given in query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(12);
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("GET:404 responds with not found when given a topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=cooking")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+});

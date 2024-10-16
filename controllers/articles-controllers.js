@@ -10,7 +10,7 @@ function getArticleById(request, response, next) {
   const articleId = request.params.article_id;
   selectArticleById(articleId)
     .then((results) => {
-      response.status(200).send({ article: results.rows });
+      response.status(200).send({ article: results.rows[0] });
     })
     .catch((err) => {
       next(err);

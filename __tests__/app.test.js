@@ -50,8 +50,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article[0].article_id).toBe(2);
-        expect(body.article.length).toBe(1);
+        expect(body.article.article_id).toBe(2);
       });
   });
   test("GET:404, responds with msg: not found when given a valid ID that does not exist", () => {
@@ -313,6 +312,16 @@ describe("/api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("not found");
+      });
+  });
+});
+describe("/api/articles/:article_id", () => {
+  test("GET:200, responds with an article including comment count by articleID", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.comment_count).toBe("11");
       });
   });
 });

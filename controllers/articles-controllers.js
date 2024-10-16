@@ -17,7 +17,8 @@ function getArticleById(request, response, next) {
 }
 
 function getArticles(request, response, next) {
-  selectArticles()
+  const { sort_by, order } = request.query;
+  selectArticles(sort_by, order)
     .then((results) => {
       response.status(200).send({ articles: results.rows });
     })

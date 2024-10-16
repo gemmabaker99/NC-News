@@ -269,3 +269,29 @@ describe("/api/users", () => {
       });
   });
 });
+describe("/api/articles", () => {
+  test("GET:200, returns articles sorted by the sort by query with order descending as default", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("GET:200, returns articles sorted by the default sort by of created_at with order set by query", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+  test("GET:400, responds with bad request when given an invalid query", () => {
+    return request(app)
+      .get("/api/articles?order=down")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

@@ -180,6 +180,51 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
-
-//ready to submit- pr was closed so do in morning
-//then straight onto task 8
+describe("/api/articles/:article_id", () => {
+  test("PATCH:200, updates the votes and then responds with the updated article", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: 2 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.article_id).toBe(3);
+        expect(body.article.votes).toBe(2);
+      });
+  });
+  test("PATCH: 400, responds with bad request when given a different key ", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ changeTopic: 3 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("PATCH: 400, responds with bad request when given an invalid data type", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: "fred" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("PATCH: 400, responds with bad request when given an invalid article ID", () => {
+    return request(app)
+      .patch("/api/articles/all")
+      .send({ inc_votes: 2 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("PATCH:404, responds with not found when given a valid but non existent article ID", () => {
+    return request(app)
+      .patch("/api/articles/99")
+      .send({ inc_votes: 2 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article not found");
+      });
+  });
+});

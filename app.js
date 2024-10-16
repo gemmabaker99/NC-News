@@ -1,40 +1,20 @@
 const express = require("express");
 const endpoints = require("./endpoints.json");
-const getTopics = require("./controllers/topics-controllers");
-const {
-  getArticleById,
-  getArticles,
-  getCommentsByArticleId,
-  increaseVotesForArticle,
-} = require("./controllers/articles-controllers");
-const {
-  postAComment,
-  removeAComment,
-} = require("./controllers/comments-controllers");
-const getAllUsers = require("./controllers/users-controllers");
+const articlesRouter = require("./routes/articles-routes");
+const commentsRouter = require("./routes/comments-routes");
+const usersRouter = require("./routes/users-routes");
+const topicsRouter = require("./routes/topics-routes");
 
 const app = express();
-
 app.use(express.json());
+app.use("/api/articles", articlesRouter);
+app.use("/api/comments", commentsRouter);
+app.use("/api/topics", topicsRouter);
+app.use("/api/users", usersRouter);
 
 app.get("/api", (request, response) => {
   response.status(200).send({ endpoints: endpoints });
 });
-app.get("/api/topics", getTopics);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.get("/api/articles", getArticles);
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
-app.post("/api/articles/:article_id/comments", postAComment);
-
-app.patch("/api/articles/:article_id", increaseVotesForArticle);
-
-app.delete("/api/comments/:comment_id", removeAComment);
-
-app.get("/api/users", getAllUsers);
 
 //not found endpoints
 app.all("*", (request, response, next) => {

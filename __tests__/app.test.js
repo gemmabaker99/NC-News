@@ -228,3 +228,29 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+describe("/api/comments/:comment_id", () => {
+  test("DELETE: 204, deletes a comment by the given comment ID and responds with no content", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE: 400, responds with bad request when given a comment id that is invalid", () => {
+    return request(app)
+      .delete("/api/comments/bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("DELETE: 404, responds with not found when given a comment ID that is valid but does not exist", () => {
+    return request(app)
+      .delete("/api/comments/99")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment not found");
+      });
+  });
+});

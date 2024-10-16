@@ -7,7 +7,10 @@ const {
   getCommentsByArticleId,
   increaseVotesForArticle,
 } = require("./controllers/articles-controllers");
-const postAComment = require("./controllers/comments-controllers");
+const {
+  postAComment,
+  removeAComment,
+} = require("./controllers/comments-controllers");
 
 const app = express();
 
@@ -27,6 +30,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postAComment);
 
 app.patch("/api/articles/:article_id", increaseVotesForArticle);
+
+app.delete("/api/comments/:comment_id", removeAComment);
 
 //not found endpoints
 app.all("*", (request, response, next) => {

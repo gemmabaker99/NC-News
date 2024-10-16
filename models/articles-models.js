@@ -11,7 +11,18 @@ function selectArticleById(articleId) {
     });
 }
 
-function selectArticles(sort_by = "created_at", order = "desc") {
+function selectArticleByTopic(topic) {
+  return db
+    .query(`SELECT * FROM articles WHERE topic = $1`, [topic])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "not found" });
+      }
+      return result;
+    });
+}
+
+function selectArticles(sort_by = "created_at", order = "desc", topic) {
   const validSortBys = ["created_at", "title", "topic", "author", "votes"];
   if (!validSortBys.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "bad request" });
@@ -20,8 +31,17 @@ function selectArticles(sort_by = "created_at", order = "desc") {
   if (!validOrders.includes(order)) {
     return Promise.reject({ status: 400, message: "bad request" });
   }
-  const queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, count(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
-  return db.query(queryString).then((results) => {
+  let queryString = `SELECT articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, count(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
+  const queryVals = [];
+  if (topic) {
+    queryVals.push(topic);
+    queryString += ` WHERE topic = $1`;
+  }
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  return db.query(queryString, queryVals).then((results) => {
+    if (results.rows.length === 0) {
+      return Promise.reject({ status: 400, message: "bad request" });
+    }
     return results;
   });
 }
@@ -56,4 +76,5 @@ module.exports = {
   selectArticles,
   selectCommentsByArticleId,
   updateVotesForArticle,
+  selectArticleByTopic,
 };

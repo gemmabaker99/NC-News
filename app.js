@@ -34,7 +34,8 @@ app.use((err, request, response, next) => {
     (err.code === "22P02") |
     (err.code === "42703") |
     (err.code === "23503") |
-    (err.code === "23502")
+    (err.code === "23502") |
+    (err.code === "2201W")
   ) {
     response.status(400).send({ msg: "bad request" });
   }

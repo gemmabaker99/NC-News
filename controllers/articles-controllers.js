@@ -5,6 +5,7 @@ const {
   updateVotesForArticle,
   selectArticleByTopic,
   insertArticle,
+  totalArticleCount,
 } = require("../models/articles-models");
 
 function getArticleById(request, response, next) {
@@ -19,19 +20,25 @@ function getArticleById(request, response, next) {
 }
 
 function getArticles(request, response, next) {
+  const { limit = 10, p = 1 } = request.query;
   const { sort_by, order, topic } = request.query;
   let articlePromise;
+  let countPromise = totalArticleCount(topic);
+
   if (topic) {
     articlePromise = selectArticleByTopic(topic).then(() => {
-      return selectArticles(sort_by, order, topic);
+      return selectArticles(sort_by, order, topic, limit, p);
     });
   } else {
-    articlePromise = selectArticles(sort_by, order, topic);
+    articlePromise = selectArticles(sort_by, order, topic, limit, p);
   }
 
-  articlePromise
-    .then((results) => {
-      response.status(200).send({ articles: results.rows });
+  Promise.all([articlePromise, countPromise])
+    .then(([articleResults, countResults]) => {
+      response.status(200).send({
+        articles: articleResults.rows,
+        total_count: Number(countResults.rows[0].total_count),
+      });
     })
     .catch((err) => {
       next(err);

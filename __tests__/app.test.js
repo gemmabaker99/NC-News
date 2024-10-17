@@ -382,3 +382,40 @@ describe("/api/comments/:comment_id", () => {
       });
   });
 });
+describe("/api/articles", () => {
+  test("POST:201, posts a new article and responds with the article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "icellusedkars",
+        title: "Welcome to my article",
+        body: "this is an article containing important information about cats",
+        topic: "cats",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(typeof body.article.author).toBe("string");
+        expect(typeof body.article.title).toBe("string");
+        expect(typeof body.article.body).toBe("string");
+        expect(typeof body.article.topic).toBe("string");
+        expect(typeof body.article.article_img_url).toBe("string");
+        expect(typeof body.article.article_id).toBe("number");
+        expect(typeof body.article.votes).toBe("number");
+        expect(typeof body.article.created_at).toBe("string");
+        expect(typeof body.article.comment_count).toBe("number");
+      });
+  });
+  test("POST:400, responds with bad request if passed an invalid/missing parts article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        title: "Welcome to my article",
+        body: "this is an article containing important information about cats",
+        topic: "cats",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

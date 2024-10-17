@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
 function selectArticleById(articleId) {
   return db
@@ -74,10 +75,25 @@ function updateVotesForArticle(articleId, voteIncrease) {
     });
 }
 
+function insertArticle(article) {
+  const { author, title, body, topic } = article;
+  let values = [author, title, body, topic];
+  const insertQuery = format(
+    `INSERT INTO articles (author, title, body, topic) VALUES %L RETURNING *`,
+    [values]
+  );
+  return db.query(insertQuery).then((results) => {
+    const newArticle = results.rows[0];
+    newArticle.comment_count = 0;
+    return newArticle;
+  });
+}
+
 module.exports = {
   selectArticleById,
   selectArticles,
   selectCommentsByArticleId,
   updateVotesForArticle,
   selectArticleByTopic,
+  insertArticle,
 };

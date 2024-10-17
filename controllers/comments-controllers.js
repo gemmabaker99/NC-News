@@ -3,6 +3,7 @@ const {
   insertAComment,
   deleteAComment,
   getCommentById,
+  increaseVotesByCommentId,
 } = require("../models/comments-models");
 
 function postAComment(request, response, next) {
@@ -34,4 +35,16 @@ function removeAComment(request, response, next) {
     });
 }
 
-module.exports = { postAComment, removeAComment };
+function updateVotesByCommentId(request, response, next) {
+  const commentId = request.params.comment_id;
+  const voteInc = request.body.inc_votes;
+  increaseVotesByCommentId(commentId, voteInc)
+    .then((results) => {
+      response.status(200).send({ comment: results });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = { postAComment, removeAComment, updateVotesByCommentId };

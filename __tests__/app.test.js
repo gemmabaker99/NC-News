@@ -343,3 +343,42 @@ describe("/api/users/:username", () => {
       });
   });
 });
+describe("/api/comments/:comment_id", () => {
+  test("PATCH: 200, updates the votes for a comment and responds with the updated comment", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: 4 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment.comment_id).toBe(2);
+        expect(body.comment.votes).toBe(18);
+      });
+  });
+  test("PATCH: 404 responds with not found when given a comment ID that does not exist", () => {
+    return request(app)
+      .patch("/api/comments/99")
+      .send({ inc_votes: 4 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+  test("PATCH: 400 responds with bad request when given an invalid comment ID", () => {
+    return request(app)
+      .patch("/api/comments/fred")
+      .send({ inc_votes: 4 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("PATCH:400, responds with bad request when given a body in incorrect format", () => {
+    return request(app)
+      .patch("/api/comments/4")
+      .send({ makevoteshigherby: "ten" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

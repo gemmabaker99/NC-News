@@ -132,6 +132,18 @@
       "name": "do_nothing",
       "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
     }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates votes for a comment and returns the updated comment",
+    "queries": [],
+    "exampleResponse":  {
+      "comment_id": 11,
+      "body": "Ambidextrous marsupial",
+      "article_id": 3,
+      "author": "icellusedkars",
+      "votes": 4,
+      "created_at": "2020-09-19T23:10:00.000Z"
+    }
   }
 }
 

@@ -32,4 +32,23 @@ function getCommentById(commentId) {
     });
 }
 
-module.exports = { insertAComment, deleteAComment, getCommentById };
+function increaseVotesByCommentId(commentId, voteInc) {
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`,
+      [voteInc, commentId]
+    )
+    .then((results) => {
+      if (results.rows.length === 0) {
+        return Promise.reject({ status: 404, message: "not found" });
+      }
+      return results.rows[0];
+    });
+}
+
+module.exports = {
+  insertAComment,
+  deleteAComment,
+  getCommentById,
+  increaseVotesByCommentId,
+};

@@ -325,3 +325,21 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+describe("/api/users/:username", () => {
+  test("GET:200, responds with a user for the given username ", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user.username).toBe("rogersop");
+      });
+  });
+  test("GET:404, responds with not found if given a username that does not exist", () => {
+    return request(app)
+      .get("/api/users/bob")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+});

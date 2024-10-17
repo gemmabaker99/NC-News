@@ -4,6 +4,7 @@ const {
   selectCommentsByArticleId,
   updateVotesForArticle,
   selectArticleByTopic,
+  insertArticle,
 } = require("../models/articles-models");
 
 function getArticleById(request, response, next) {
@@ -63,9 +64,21 @@ function increaseVotesForArticle(request, response, next) {
     });
 }
 
+function postAnArticle(request, response, next) {
+  const article = request.body;
+  insertArticle(article)
+    .then((result) => {
+      response.status(201).send({ article: result });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
   increaseVotesForArticle,
+  postAnArticle,
 };

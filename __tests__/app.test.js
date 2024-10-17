@@ -447,3 +447,29 @@ describe("/api/articles", () => {
       });
   });
 });
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200,responds with comments seperated by the given inputs", () => {
+    return request(app)
+      .get("/api/articles/3/comments?limit=1&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(1);
+      });
+  });
+  test("GET:200, responds with comments seperated by default inputs when not given any", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(2);
+      });
+  });
+  test("GET:400, responds with bad request when given invalid inputs for limit and page", () => {
+    return request(app)
+      .get("/api/articles/3/comments?limit=-1&p=0")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

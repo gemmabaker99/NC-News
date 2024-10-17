@@ -47,9 +47,11 @@ function getArticles(request, response, next) {
 
 function getCommentsByArticleId(request, response, next) {
   const articleId = request.params.article_id;
+  let { limit = 10, p = 1 } = request.query;
+
   selectArticleById(articleId)
     .then(() => {
-      return selectCommentsByArticleId(articleId);
+      return selectCommentsByArticleId(articleId, limit, p);
     })
     .then((results) => {
       response.status(200).send({ comments: results.rows });

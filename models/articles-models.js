@@ -26,8 +26,15 @@ function selectArticleByTopic(topic) {
     });
 }
 
-function selectArticles(sort_by = "created_at", order = "desc", topic) {
+function selectArticles(
+  sort_by = "created_at",
+  order = "desc",
+  topic,
+  limit,
+  p
+) {
   const validSortBys = ["created_at", "title", "topic", "author", "votes"];
+  const offset = (p - 1) * limit;
   if (!validSortBys.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "bad request" });
   }
@@ -41,13 +48,21 @@ function selectArticles(sort_by = "created_at", order = "desc", topic) {
     queryVals.push(topic);
     queryString += ` WHERE topic = $1`;
   }
-  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
   return db.query(queryString, queryVals).then((results) => {
     if (results.rows.length === 0) {
       return Promise.reject({ status: 400, message: "bad request" });
     }
     return results;
   });
+}
+
+function totalArticleCount() {
+  return db
+    .query(`SELECT count(article_id) AS total_count FROM articles`)
+    .then((results) => {
+      return results;
+    });
 }
 
 function selectCommentsByArticleId(articleId) {
@@ -96,4 +111,5 @@ module.exports = {
   updateVotesForArticle,
   selectArticleByTopic,
   insertArticle,
+  totalArticleCount,
 };

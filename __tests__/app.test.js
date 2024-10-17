@@ -76,7 +76,7 @@ describe("/api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.length).toBe(13);
+        expect(body.articles.length).toBe(10);
         body.articles.forEach((article) => {
           expect(typeof article.author).toBe("string");
           expect(typeof article.title).toBe("string");
@@ -300,7 +300,7 @@ describe("/api/articles", () => {
       .get("/api/articles?topic=mitch")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles.length).toBe(12);
+        expect(body.articles.length).toBe(10);
         body.articles.forEach((article) => {
           expect(article.topic).toBe("mitch");
         });
@@ -413,6 +413,34 @@ describe("/api/articles", () => {
         body: "this is an article containing important information about cats",
         topic: "cats",
       })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+describe("/api/articles", () => {
+  test("GET:200, responds with articles seperated into pages with total count using given values", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(5);
+        expect(body.total_count).toBeGreaterThan(5);
+      });
+  });
+  test("GET:200, responds with articles seperated into pages with total count using default values", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(10);
+        expect(body.total_count).toBe(13);
+      });
+  });
+  test("GET:400, responds with bad request when provided with an invalid page and limit query ", () => {
+    return request(app)
+      .get("/api/articles?limit=-1&p=0")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");

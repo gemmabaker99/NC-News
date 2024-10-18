@@ -473,3 +473,24 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("/api/topics", () => {
+  test("POST:201, creates a new topic and responds with newly created topic", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({ slug: "cooking", description: "for all things cooking" })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.topic.slug).toBe("cooking");
+        expect(body.topic.description).toBe("for all things cooking");
+      });
+  });
+  test("POST:400, responds with bad request if given an invalid body ", () => {
+    return request(app)
+      .post("/api/topics")
+      .send({ description: "for all things cooking" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

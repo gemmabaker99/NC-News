@@ -50,9 +50,6 @@ function selectArticles(
   }
   queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order} LIMIT ${limit} OFFSET ${offset}`;
   return db.query(queryString, queryVals).then((results) => {
-    if (results.rows.length === 0) {
-      return Promise.reject({ status: 400, message: "bad request" });
-    }
     return results;
   });
 }

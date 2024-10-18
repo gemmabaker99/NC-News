@@ -6,6 +6,7 @@ const {
   getCommentsByArticleId,
   increaseVotesForArticle,
   postAnArticle,
+  deleteArticleByArticleId,
 } = require("../controllers/articles-controllers");
 const { postAComment } = require("../controllers/comments-controllers");
 
@@ -20,5 +21,7 @@ router.patch("/:article_id", increaseVotesForArticle);
 router.post("/:article_id/comments", postAComment);
 
 router.post("/", postAnArticle);
+
+router.delete("/:article_id", deleteArticleByArticleId);
 
 module.exports = router;

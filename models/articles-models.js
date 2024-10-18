@@ -105,6 +105,14 @@ function insertArticle(article) {
   });
 }
 
+function removeArticleByArticleId(articleId) {
+  return db
+    .query(`DELETE FROM articles WHERE article_id = $1`, [articleId])
+    .then((results) => {
+      return results;
+    });
+}
+
 module.exports = {
   selectArticleById,
   selectArticles,
@@ -113,4 +121,5 @@ module.exports = {
   selectArticleByTopic,
   insertArticle,
   totalArticleCount,
+  removeArticleByArticleId,
 };

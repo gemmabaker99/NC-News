@@ -494,3 +494,29 @@ describe("/api/topics", () => {
       });
   });
 });
+describe("/api/articles/:article_id", () => {
+  test("DELETE: 204, deletes article for the given article ID and responds with an empty body", () => {
+    return request(app)
+      .delete("/api/articles/3")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE:400, responds with bad request when given an article ID that is invalid", () => {
+    return request(app)
+      .delete("/api/articles/bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+  test("DELETE:404, responds with not found when given an article ID that is valid but does not exist", () => {
+    return request(app)
+      .delete("/api/articles/99")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
+      });
+  });
+});

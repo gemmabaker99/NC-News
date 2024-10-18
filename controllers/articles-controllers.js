@@ -6,6 +6,7 @@ const {
   selectArticleByTopic,
   insertArticle,
   totalArticleCount,
+  removeArticleByArticleId,
 } = require("../models/articles-models");
 
 function getArticleById(request, response, next) {
@@ -84,10 +85,25 @@ function postAnArticle(request, response, next) {
     });
 }
 
+function deleteArticleByArticleId(request, response, next) {
+  const articleId = request.params.article_id;
+  selectArticleById(articleId)
+    .then(() => {
+      return removeArticleByArticleId(articleId);
+    })
+    .then((results) => {
+      response.status(204).send(results);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getArticleById,
   getArticles,
   getCommentsByArticleId,
   increaseVotesForArticle,
   postAnArticle,
+  deleteArticleByArticleId,
 };

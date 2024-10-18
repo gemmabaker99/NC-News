@@ -164,8 +164,14 @@
     "description": "posts a new topic and responds with that topic",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "cooking", "description": "for all things cooking!" }]
+      "topic": { "slug": "cooking", "description": "for all things cooking!" }
     }
+  }
+  ,
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes article for the given article ID and responds with no content",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
 

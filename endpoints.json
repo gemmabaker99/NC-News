@@ -159,6 +159,13 @@
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
       "comment_count": 0
     }
+  },
+  "POST /api/topics": {
+    "description": "posts a new topic and responds with that topic",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [{ "slug": "cooking", "description": "for all things cooking!" }]
+    }
   }
 }
 

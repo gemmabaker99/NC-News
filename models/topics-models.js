@@ -1,4 +1,6 @@
 const db = require("../db/connection");
+const format = require("pg-format");
+
 function selectTopics() {
   return db.query("SELECT * FROM topics").then((results) => {
     if (results.rows.length === 0) {
@@ -7,4 +9,22 @@ function selectTopics() {
     return results;
   });
 }
-module.exports = selectTopics;
+
+function insertATopic(slug, description) {
+  let insValues = [];
+  if (typeof slug === "string" && typeof description === "string") {
+    insValues.push(description);
+    insValues.push(slug);
+  } else {
+    return Promise.reject({ status: 400, message: "bad request" });
+  }
+  const insertQuery = format(
+    `INSERT INTO topics (description,slug) VALUES %L RETURNING *`,
+    [insValues]
+  );
+
+  return db.query(insertQuery).then((results) => {
+    return results.rows[0];
+  });
+}
+module.exports = { selectTopics, insertATopic };

@@ -8,6 +8,8 @@ const {
   totalArticleCount,
   removeArticleByArticleId,
 } = require("../models/articles-models");
+const { selectTopicByName } = require("../models/topics-models");
+const { selectUserByUsername } = require("../models/users-models");
 
 function getArticleById(request, response, next) {
   const articleId = request.params.article_id;
@@ -27,7 +29,7 @@ function getArticles(request, response, next) {
   let countPromise = totalArticleCount(topic);
 
   if (topic) {
-    articlePromise = selectArticleByTopic(topic).then(() => {
+    articlePromise = selectTopicByName(topic).then(() => {
       return selectArticles(sort_by, order, topic, limit, p);
     });
   } else {
@@ -42,6 +44,7 @@ function getArticles(request, response, next) {
       });
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 }
@@ -76,7 +79,13 @@ function increaseVotesForArticle(request, response, next) {
 
 function postAnArticle(request, response, next) {
   const article = request.body;
-  insertArticle(article)
+  if (!article.author || !article.body) {
+    return next({ status: 400, message: "bad request" });
+  }
+  selectUserByUsername(article.author)
+    .then(() => {
+      return insertArticle(article);
+    })
     .then((result) => {
       response.status(201).send({ article: result });
     })

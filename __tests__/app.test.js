@@ -311,7 +311,15 @@ describe("/api/articles", () => {
       .get("/api/articles?topic=cooking")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("not found");
+        expect(body.msg).toBe("topic not found");
+      });
+  });
+  test("GET:200, responds with empty array when given a topic that has no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
       });
   });
 });
@@ -405,17 +413,45 @@ describe("/api/articles", () => {
         expect(typeof body.article.comment_count).toBe("number");
       });
   });
+  test("POST:201, posts a new article and responds with the article, ignores extra properties", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "icellusedkars",
+        title: "Welcome to my article",
+        body: "this is an article containing important information about cats",
+        topic: "cats",
+        banana: "dance",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article.banana).toBe(undefined);
+      });
+  });
   test("POST:400, responds with bad request if passed an invalid/missing parts article", () => {
     return request(app)
       .post("/api/articles")
       .send({
-        title: "Welcome to my article",
         body: "this is an article containing important information about cats",
         topic: "cats",
       })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+  test("POST:404, responds with not found if passed a username that does not exist", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "phillip",
+        title: "Welcome to my article",
+        body: "this is an article containing important information about cats",
+        topic: "cats",
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("not found");
       });
   });
 });

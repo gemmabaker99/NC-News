@@ -33,7 +33,14 @@ function selectArticles(
   limit,
   p
 ) {
-  const validSortBys = ["created_at", "title", "topic", "author", "votes"];
+  const validSortBys = [
+    "created_at",
+    "title",
+    "topic",
+    "author",
+    "votes",
+    "comment_count",
+  ];
   const offset = (p - 1) * limit;
   if (!validSortBys.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "bad request" });
